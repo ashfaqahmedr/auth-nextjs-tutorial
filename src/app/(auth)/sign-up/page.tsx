@@ -22,12 +22,11 @@ const Page = async () => {
         </div>
         <div className="relative flex justify-center text-sm">
           <span className="bg-background px-2 text-muted-foreground">
-            Or continue with email
+            Or continue with username and password
           </span>
         </div>
       </div>
 
-      {/* Email/Password Sign Up */}
       <form
         className="space-y-4"
         action={async (formData) => {
@@ -39,11 +38,18 @@ const Page = async () => {
         }}
       >
         <Input
-          name="email"
-          placeholder="Email"
-          type="email"
+          name="name"
+          placeholder="Full Name"
+          type="text"
           required
-          autoComplete="email"
+          autoComplete="name"
+        />
+        <Input
+          name="username"
+          placeholder="Username"
+          type="text"
+          required
+          autoComplete="username"
         />
         <Input
           name="password"
@@ -52,6 +58,15 @@ const Page = async () => {
           required
           autoComplete="new-password"
         />
+        <select
+          name="userType"
+          className="w-full p-2 border rounded-md"
+          required
+        >
+          <option value="" disabled selected>Select User Type</option>
+          <option value="user">User</option>
+          <option value="admin">Admin</option>
+        </select>
         <Button className="w-full" type="submit">
           Sign Up
         </Button>

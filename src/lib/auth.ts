@@ -6,7 +6,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import GitHub from "next-auth/providers/github";
-import { schema } from "@/lib/schema";
+import { SignInSchema } from "@/lib/schema";
 
 const adapter = PrismaAdapter(db);
 
@@ -16,24 +16,37 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     GitHub,
     Credentials({
       credentials: {
-        email: {},
+        username: {},
         password: {},
       },
+      
       authorize: async (credentials) => {
-        const validatedCredentials = schema.parse(credentials);
 
-        const user = await db.user.findFirst({
-          where: {
-            email: validatedCredentials.email,
-            password: validatedCredentials.password,
-          },
-        });
+        const { username, password } = await SignInSchema.parseAsync(credentials)
+
+          const user = await db.user.findUnique({
+            where: { username: username,
+                password: password
+            },
+          })
+
+          // if (!user) return null
+
+          // const isValid = await bcrypt.compare(password, user.password)
+          // if (!isValid) return null
+
 
         if (!user) {
           throw new Error("Invalid credentials.");
         }
 
-        return user;
+        return {
+          id: user.id,
+          name: user.fullName,
+          username: user.username,
+          userType: user.userType, // Add userType to session
+        };
+ 
       },
     }),
   ],
@@ -57,6 +70,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const createdSession = await adapter?.createSession?.({
           sessionToken: sessionToken,
           userId: params.token.sub,
+          
           expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         });
 
@@ -69,4 +83,5 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return defaultEncode(params);
     },
   },
+   secret: process.env.AUTH_SECRET,
 });

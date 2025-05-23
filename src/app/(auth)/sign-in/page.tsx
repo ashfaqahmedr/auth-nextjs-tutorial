@@ -23,7 +23,7 @@ const Page = async () => {
         </div>
         <div className="relative flex justify-center text-sm">
           <span className="bg-background px-2 text-muted-foreground">
-            Or continue with email
+            Or continue with username and password
           </span>
         </div>
       </div>
@@ -41,11 +41,11 @@ const Page = async () => {
         }}
       >
         <Input
-          name="email"
-          placeholder="Email"
-          type="email"
+          name="username"
+          placeholder="username"
+          type="string  "
           required
-          autoComplete="email"
+          autoComplete="username"
         />
         <Input
           name="password"
